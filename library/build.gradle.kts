@@ -1,9 +1,11 @@
+import java.util.Base64
+
 plugins {
   id("com.eygraber.conventions-kotlin-multiplatform")
   id("com.eygraber.conventions-android-library")
   id("com.eygraber.conventions-compose-jetbrains")
   id("com.eygraber.conventions-detekt")
-  id("com.eygraber.conventions-publish-maven-central")
+  `maven-publish`
 }
 
 android {
@@ -23,6 +25,23 @@ kotlin {
       implementation(compose.runtime)
 
       implementation(libs.kotlinx.coroutines.core)
+    }
+  }
+}
+
+publishing {
+  repositories {
+    maven("https://europe-west3-maven.pkg.dev/mik-music/trainyapp") {
+      credentials {
+        username = "_json_key_base64"
+        password = System.getenv("GOOGLE_KEY")?.toByteArray()?.let {
+          Base64.getEncoder().encodeToString(it)
+        }
+      }
+
+      authentication {
+        create<BasicAuthentication>("basic")
+      }
     }
   }
 }
